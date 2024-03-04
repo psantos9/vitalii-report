@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-screen flex flex-col justify-center items-center">
     <div>Dataset: {{ selectedDataset }}</div>
     <div>Metric: {{ selectedMetric }}</div>
   </div>
@@ -81,9 +81,21 @@ const createConfig = (): lxr.ReportConfiguration => {
   }
 }
 
-(async () => {
-  await lx.init()
-  return lx.ready(createConfig())
-})()
+const fetchImpactGraphQL = async () => {
+  const url = new URL(lx.currentSetup.settings.baseUrl)
+  url.pathname = 'services/impacts/v1/graphql'
+  const query = 'allFactSheets { edges { node { id } } } '
+  // Doesn't work, we get a 415 - Unsupported Media Type because lx.executeParentOriginXHR doesn't allow to set the
+  // header "Content-Type": "application/json"
+  const res = await lx.executeParentOriginXHR('POST', url.toString(), JSON.stringify({ query }))
+  console.log('GOT RESPONSE', res)
+}
 
+const initReport = async () => {
+  await lx.init()
+  await lx.ready(createConfig())
+  await fetchImpactGraphQL()
+}
+
+initReport()
 </script>
