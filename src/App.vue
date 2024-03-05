@@ -95,8 +95,10 @@ const fetchImpactGraphQL = async () => {
 
 const getAllFactSheets = async () => {
   const res = await lx.getAllFactSheets('BusinessCapability', [
-    // @ts-expect-error "name" is defined in lxr.AttributeDescription as mandatory field, but we can omit it
-    { type: 'field', field: 'name', fieldType: 'STRING' },
+    // We'll fetch a field on BusinessCapability, "name"
+    // @ts-expect-error "name" and "fieldType" are defined in lxr.AttributeDescription as mandatory fields, but we can omit them
+    { type: 'field', field: 'name' },
+    // We'll set the fields to be fetched while traversing a set of relations for BusinessCapability
     // @ts-expect-error "name" and "fieldType" are defined in lxr.AttributeDescription as mandatory fields, but we can omit them
     { type: 'targetField', relation: 'relBusinessCapabilityToApplication', field: 'name type displayName relApplicationToITComponent { edges { node { factSheet { ...on ITComponent { id type name } } } } }', activeOnly: true, targetFactSheetType: 'Application' }
   ], {
