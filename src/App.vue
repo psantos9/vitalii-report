@@ -81,6 +81,7 @@ const createConfig = (): lxr.ReportConfiguration => {
   }
 }
 
+/*
 const fetchImpactGraphQL = async () => {
   const url = new URL(lx.currentSetup.settings.baseUrl)
   url.pathname = 'services/impacts/v1/graphql'
@@ -90,11 +91,33 @@ const fetchImpactGraphQL = async () => {
   const res = await lx.executeParentOriginXHR('POST', url.toString(), JSON.stringify({ query }))
   console.log('GOT RESPONSE', res)
 }
+*/
+
+const getAllFactSheets = async () => {
+  const res = await lx.getAllFactSheets('BusinessCapability', [
+    // @ts-expect-error "name"are defined in lxr.AttributeDescription as mandatory fields, but we can omit it
+    { type: 'field', field: 'name', fieldType: 'STRING' },
+    // PS: the name attribute is irrelevant for us, line below illustrates how to fetch fields on related factsheets
+    // @ts-expect-error "name" and "fieldType" are defined in lxr.AttributeDescription as mandatory fields, but we can omit them
+    { type: 'targetField', relation: 'relBusinessCapabilityToApplication', field: 'name type displayName relApplicationToITComponent { edges { node { factSheet { ...on ITComponent { id type name } } } } }', activeOnly: true, targetFactSheetType: 'Application' }
+  ], {
+    facets: [
+      { facetKey: 'FactSheetTypes', keys: ['BusinessCapability'] },
+      { facetKey: 'relBusinessCapabilityToApplication', keys: ['__missing__'], operator: 'NOR' as lxr.FacetKeyOperator.NOR }
+    ],
+    directHits: []
+  }, {
+    mypointintime1: { factSheetIds: [], pointInTime: { date: '2024-03-05', milestoneId: null } },
+    mypointintime2: {factSheetIds: [], pointInTime: { date: '2024-03-07', milestoneId: null }}
+  })
+  console.log('GOT QUERY RESULT', res)
+}
 
 const initReport = async () => {
   await lx.init()
   await lx.ready(createConfig())
-  await fetchImpactGraphQL()
+  // await fetchImpactGraphQL()
+  await getAllFactSheets()
 }
 
 initReport()
