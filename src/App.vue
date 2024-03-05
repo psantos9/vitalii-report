@@ -97,7 +97,6 @@ const getAllFactSheets = async () => {
   const res = await lx.getAllFactSheets('BusinessCapability', [
     // @ts-expect-error "name" is defined in lxr.AttributeDescription as mandatory fields, but we can omit it
     { type: 'field', field: 'name', fieldType: 'STRING' },
-    // PS: the name attribute is irrelevant for us, line below illustrates how to fetch fields on related factsheets
     // @ts-expect-error "name" and "fieldType" are defined in lxr.AttributeDescription as mandatory fields, but we can omit them
     { type: 'targetField', relation: 'relBusinessCapabilityToApplication', field: 'name type displayName relApplicationToITComponent { edges { node { factSheet { ...on ITComponent { id type name } } } } }', activeOnly: true, targetFactSheetType: 'Application' }
   ], {
